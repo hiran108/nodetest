@@ -5,35 +5,43 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var fs = require('fs')
-var index = require('./routes/index');
-var users = require('./routes/users');
-var dbaccess=require('./routes/dbaccess.js');
-var login = require('./routes/login');
-var jwt = require('jsonwebtoken');
-var passport = require("passport");
-var passportJWT = require("passport-jwt");
-var ExtractJwt = passportJWT.ExtractJwt;
-var JwtStrategy = passportJWT.Strategy;
+
+
+
 
 var app = express();
+
+//settings
+app.set('dbconnection','mongodb://sa:test123@localhost:27017/admin');
+
+
+//log setup
 var accessLogStream = fs.createWriteStream( './access.log', {flags: 'a'})
+app.use(logger('common', {stream: accessLogStream}));
+app.use(logger('dev'));
+
+
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
-global.rootRequire = function(name) {
-    return require( './' + name);
-}
-// uncomment after placing your favicon in /public
-//app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
-app.use(logger('common', {stream: accessLogStream}));
-app.use(logger('dev'));
+
+
+//env
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+
+//auth
+var passport = require("passport");
 app.use(passport.initialize());
+
+//route
+var index = require('./routes/index');
+var users = require('./routes/users');
+var login = require('./routes/login');
 app.use('/', index);
-app.use('/users', users);
+app.use('/users',passport.authenticate('jwt', { session: false }),users );
 app.use('/login', login);
 
 // catch 404 and forward to error handler
@@ -53,11 +61,6 @@ app.use(function(err, req, res, next) {
   res.status(err.status || 500);
   res.render('error');
 });
-
-
-
-
-
 
 
 

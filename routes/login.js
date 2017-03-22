@@ -27,10 +27,11 @@ jwtOptions.jwtFromRequest = ExtractJwt.fromAuthHeader();
 jwtOptions.secretOrKey = 'tasmanianDevil';
 
 var strategy = new JwtStrategy(jwtOptions, function(jwt_payload, next) {
-  console.log('payload received', jwt_payload);
+ // console.log('payload received', jwt_payload);
   // usually this would be a database call:
   var user = users[_.findIndex(users, {id: jwt_payload.id})];
   if (user) {
+     // console.log('user login'+user.name)
     next(null, user);
   } else {
     next(null, false);
@@ -43,18 +44,19 @@ passport.use(strategy);
 router.get('/', function(req, res, next) {
   var dbi=new dbaccess();
  // console.log(JSON.stringify(req.headers));
-if(req.headers['name'] && req.headers['password']){
-    var name = req.headers['name'];
-    var password = req.headers['password'];
+ 
+if(req.query.name && req.query.password){
+    var name = req.query.name;
+    var password = req.query.password;
     var user = users[_.findIndex(users, {name: name})];
   if( ! user ){
     res.status(401).json({message:"no such user found"});
   }
-else if(user.password === req.headers['password']) {
+else if(user.password === req.query.password) {
     // from now on we'll identify the user by the id and the id is the only personalized value that goes into our token
     var payload = {id: user.id};
     var token = jwt.sign(payload, jwtOptions.secretOrKey);
-    console.log(token);
+   
     res.json({message: "ok", token: token});
   } else {
     res.status(401).json({message:"passwords did not match"});
