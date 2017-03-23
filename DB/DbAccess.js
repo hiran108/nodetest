@@ -1,33 +1,92 @@
-var dbaccess=function(){
-var MongoClient = require('mongodb').MongoClient;
+var express = require("express");
 
-var URL = 'mongodb://sa:test123@localhost:27017/admin';
-export function getData (name)
-{
-MongoClient.connect(URL, function(err, database) {
-  if (err) {
-  //res.send(err);
-  return err;
+var dbaccess = function (appx) {
+
+  var self = this;
+  var MongoClient = require('mongodb').MongoClient;
+  //var appx=appx;
+
+  self.searchCustomer = function (name, adata) {
+
+    MongoClient.connect(appx.get('dbconnection'), function (err, database) {
+      if (err) {
+        console.log(err);
+        return err;
+      }
+      var database2 = database.db(appx.get('dbname'));
+      var collection = database2.collection('Product');
+      collection.find({ name: name }).toArray(adata);
+
+
+      database2.close();
+      database.close();
+    });
+
+
+
   }
-var database2 = database.db("customer");
-  var collection = database2.collection('address');
-  collection.find({}).toArray(function(err,data)
-  {
-  if (err) {
-                console.log(err);
-                return err;
-            } else {
-               
-                return data;
-            }
+
+  self.checkUser = function (name, password, response) {
+
+    MongoClient.connect(appx.get('dbconnection'), function (err, database) {
+      if (err) {
+        console.log(err);
+        return err;
+      }
+      var database2 = database.db(appx.get('dbname'));
+      var collection = database2.collection('Login');
+      collection.find({ username: name, password: password }).toArray(response);
+
+
+      database2.close();
+      database.close();
+    });
+
+
+
   }
-  );
 
-   
-  database2.close();
-  database.close();
-});
-  
-}}
+  self.addToken = function (name, token, ip, response) {
 
-module.exports=dbaccess;
+    MongoClient.connect(appx.get('dbconnection'), function (err, database) {
+      if (err) {
+        console.log(err);
+        return err;
+      }
+      var database2 = database.db(appx.get('dbname'));
+      var collection = database2.collection('Token');
+      collection.insert({ username: name, token: token, ip: ip }, response);
+
+
+      database2.close();
+      database.close();
+    });
+
+
+
+  }
+
+  self.checkToken = function (name, ip, response) {
+
+    MongoClient.connect(appx.get('dbconnection'), function (err, database) {
+      if (err) {
+        console.log(err);
+        return err;
+      }
+      var database2 = database.db(appx.get('dbname'));
+      var collection = database2.collection('Token');
+      collection.find({ username: name, ip: ip }).toArray(response);
+
+
+      database2.close();
+      database.close();
+    });
+
+
+
+  }
+
+
+}
+
+module.exports = dbaccess;

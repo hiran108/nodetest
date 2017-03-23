@@ -1,12 +1,12 @@
 var express = require('express');
 var router = express.Router();
 var path = require('path');
-var dbaccess=require('../routes/dbaccess.js');
+var dbaccess=require('../DB/dbaccess.js');
 
 router.get('/', function(req, res, next) 
     {
       var dbi=new dbaccess(req.app);
-      var text=dbi.searchCustomer("addline1",function(err,data)
+      var text=dbi.searchCustomer("butter",function(err,data)
       {
       if (err) {
                     console.log(err);

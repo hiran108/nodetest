@@ -12,7 +12,8 @@ var fs = require('fs')
 var app = express();
 
 //settings
-app.set('dbconnection','mongodb://sa:test123@localhost:27017/admin');
+app.set('dbconnection','mongodb://pos:test123@localhost:27017/admin');
+app.set('dbname','POS');
 
 
 //log setup
@@ -41,7 +42,7 @@ var index = require('./routes/index');
 var users = require('./routes/users');
 var login = require('./routes/login');
 app.use('/', index);
-app.use('/users',passport.authenticate('jwt', { session: false }),users );
+app.use('/users',passport.authenticate('jwt', { session: false}),users );
 app.use('/login', login);
 
 // catch 404 and forward to error handler
