@@ -44,11 +44,15 @@ router.get('/', function (req, res, next) {
         var name = req.query.name;
         var password = req.query.password;
         var user = dbi.checkUser(name, password, function (err, data) {
+           console.log(data.lenght);
             if (err) {
                 res.status(401).json({ message: "Error on server" });
+                return;
             }
-            else if (!data) {
+            else if ( Object.keys(data).length===0) {
+                console.log(data.lenght);
                 res.status(401).json({ message: "no such user found" });
+                return;
             }
             else {
                 console.log(data);

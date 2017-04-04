@@ -18,6 +18,8 @@
   "passport": "*",
     "passport-jwt": "*",
     "jsonwebtoken":"*",
-	"lodash":"*"
+	"lodash":"*",
+  "cors":"*"
+
   }
 }

@@ -36,14 +36,19 @@ app.use(express.static(path.join(__dirname, 'public')));
 //auth
 var passport = require("passport");
 app.use(passport.initialize());
-
+var cors = require('cors');
+var corsOptions = {
+  origin: 'http://localhost:4200',
+  optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
+};
+app.use(cors(corsOptions));
 //route
 var index = require('./routes/index');
 var users = require('./routes/users');
 var login = require('./routes/login');
 app.use('/', index);
 app.use('/users',passport.authenticate('jwt', { session: false}),users );
-app.use('/login', login);
+app.use('/login',cors(corsOptions), login);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
